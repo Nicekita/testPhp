@@ -143,6 +143,6 @@ class TsReturnOperation extends ReferencesOperation
         $default['notificationClientBySms']['message'] = $message;
         return $default;
     }
-
+    // По итогу, мне кажется дальше выносить в отдельные классы логику странно, возможно я не так понял и я должен был активно менять others.php тоже
 
 }
