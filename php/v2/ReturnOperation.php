@@ -10,7 +10,7 @@ class TsReturnOperation extends ReferencesOperation
     public const TYPE_CHANGE = 2;
 
 
-    private const defaultResult = [
+    private const DEFAULT_RESULT = [
         'notificationEmployeeByEmail' => false,
         'notificationClientByEmail'   => false,
         'notificationClientBySms'     => [
@@ -29,17 +29,19 @@ class TsReturnOperation extends ReferencesOperation
     public function doOperation(): array
     {
         try {
-            $data = $this->getRequest('data');
-            $clientId = (int)$data['clientId'];
-            $resellerId = (int)$data['resellerId'];
-            $notificationType = (int)$data['notificationType'];
+            $data = (array) $this->getRequest('data');
+            // Вообще не уверен что мы этой функции можем доверять, но так как она в others представим что да
+            // Если нет, надо бы отдельно валидацию на request сделать...
+            $clientId = (int) $data['clientId'];
+            $resellerId = (int) $data['resellerId'];
+            $notificationType = (int) $data['notificationType'];
             $client = Contractor::getById($clientId);
 
             if ($client === null || $client->type !== Contractor::TYPE_CUSTOMER || $client->Seller->id !== $resellerId) {
                 throw new Exception('Client not found!');
             }
 
-            $templateData = $this->getTemplate($this->getRequest('data'), $client);
+            $templateData = $this->getTemplate($data, $client);
 
             $emailFrom = getResellerEmailFrom($resellerId);
 
@@ -139,10 +141,11 @@ class TsReturnOperation extends ReferencesOperation
 
     private function createError(string $message) : array
     {
-        $default = self::defaultResult;
+        $default = self::DEFAULT_RESULT;
         $default['notificationClientBySms']['message'] = $message;
         return $default;
     }
-    // По итогу, мне кажется дальше выносить в отдельные классы логику странно, возможно я не так понял и я должен был активно менять others.php тоже
+    // По итогу, мне кажется дальше выносить в отдельные классы логику странно, возможно я не так понял и я должен был активно менять others.php
+    // Дальнейший рефакторинг будет овероптимизацией, надо видеть контекст проекта чтобы понимать, нужно ли ещё что-то делать
 
 }
