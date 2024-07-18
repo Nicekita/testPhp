@@ -12,7 +12,7 @@ class Contractor
     public $type;
     public $name;
 
-    public static function getById(int $resellerId): self
+    public static function getById(int $resellerId): self | null
     {
         return new self($resellerId); // fakes the getById method
     }
@@ -57,7 +57,7 @@ abstract class ReferencesOperation
     }
 }
 
-function getResellerEmailFrom()
+function getResellerEmailFrom($resellerId)
 {
     return 'contractor@example.com';
 }
